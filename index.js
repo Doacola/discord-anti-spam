@@ -1,7 +1,8 @@
 if (Number(process.version.split('.')[0].match(/[0-9]+/)) < 10)
 	throw new Error('Node 10.0.0 or higher is required. Update Node on your system.');
-const { RichEmbed, GuildMember, Message } = require('discord.js');
+const { RichEmbed, GuildMember, Message, MessageEmbed } = require('discord.js');
 const { EventEmitter } = require('events');
+const { version } = require('discord.js');
 
 /**
  * Options for AntiSpam instance
@@ -15,9 +16,13 @@ const { EventEmitter } = require('events');
  * @property {number} [maxInterval=2000] Amount of time (ms) in which messages are considered spam.
  * @property {number} [maxDuplicatesInterval=2000] Amount of time (ms) in which duplicate messages are considered spam.
  * 
- * @property {string|RichEmbed} [warnMessage='{@user}, Please stop spamming.'] Message that will be sent in chat upon warning a user.
- * @property {string|RichEmbed} [kickMessage='**{user_tag}** has been kicked for spamming.'] Message that will be sent in chat upon kicking a user.
- * @property {string|RichEmbed} [banMessage='**{user_tag}** has been banned for spamming.'] Message that will be sent in chat upon banning a user.
+ * @property {string|RichEmbed|MessageEmbed} [warnMessage='{@user}, Please stop spamming.'] Message that will be sent in chat upon warning a user.
+ * @property {string|RichEmbed|MessageEmbed} [kickMessage='**{user_tag}** has been kicked for spamming.'] Message that will be sent in chat upon kicking a user.
+ * @property {string|RichEmbed|MessageEmbed} [banMessage='**{user_tag}** has been banned for spamming.'] Message that will be sent in chat upon banning a user.
+ * 
+ * @property {boolean} [errorMessages=true] Whether the error messages, when the bot doesn't have enough permissions, must be sent or not
+ * @property {string|RichEmbed|MessageEmbed} [kickErrorMessage='Could not kick **{user_tag}** because of improper permissions.'] Message that will be sent in chat when the bot doesn't have enough permissions to kick the member.
+ * @property {string|RichEmbed|MessageEmbed} [banErrorMessage='Could not ban **{user_tag}** because of improper permissions.'] Message that will be sent in chat when the bot doesn't have enough permissions to ban the member.
  * 
  * @property {number} [maxDuplicatesWarning=7] Amount of duplicate messages that trigger a warning.
  * @property {number} [maxDuplicatesKick=10] Amount of duplicate messages that trigger a kick.
@@ -48,6 +53,9 @@ const clientOptions = {
 	warnMessage: '{@user}, Please stop spamming.',
 	kickMessage: '**{user_tag}** has been kicked for spamming.',
 	banMessage: '**{user_tag}** has been banned for spamming.',
+	errorMessages: true,
+	kickErrorMessage: "Could not kick **{user_tag}** because of improper permissions.",
+	banErrorMessage: "Could not ban **{user_tag}** because of improper permissions.",
 	maxDuplicatesWarning: 7,
 	maxDuplicatesKick: 10,
 	maxDuplicatesBan: 10,
@@ -139,12 +147,15 @@ class AntiSpam extends EventEmitter {
 		if (
 			message.channel.type === 'dm' ||
 			message.author.id === message.client.user.id ||
-			message.guild.ownerID !== message.author.id
+			message.guild.ownerID === message.author.id
 		)
 			return false;
 
 		const { options, data } = this;
-		if (!message.member) message.member = await message.guild.fetchMember(message.author);
+		if (!message.member){
+			if(version === "12.0.0-dev") message.member = await message.guild.members.fetch(message.author);
+			else message.member = await message.guild.fetchMember(message.author);
+		}
 		if (
 			(options.ignoreBots && message.author.bot) ||
 			options.exemptPermissions.some(permission => message.member.hasPermission(permission))
@@ -178,6 +189,12 @@ class AntiSpam extends EventEmitter {
 					console.log(
 						`**${message.author.tag}** (ID: ${message.author.id}) could not be banned, insufficient permissions.`
 					);
+				if (options.errorMessages)
+					await message.channel
+						.send(format(options.banErrorMessage, message))
+						.catch((e) => {
+							if (options.verbose) console.error(e);
+						});
 				return false;
 			}
 
@@ -200,7 +217,7 @@ class AntiSpam extends EventEmitter {
 						`**${message.author.tag}** (ID: ${message.author.id}) could not be banned, ${error}.`
 					);
 				await message.channel
-					.send(`Could not ban **${message.author.tag}** because of an error: \`${error}\`.`)
+					.send(format(options.banErrorMessage, message))
 					.catch(e => {
 						if (options.verbose) console.error(e);
 					});
@@ -217,13 +234,12 @@ class AntiSpam extends EventEmitter {
 					console.log(
 						`**${message.author.tag}** (ID: ${message.author.id}) could not be kicked, insufficient permissions.`
 					);
-				await message.channel
-					.send(
-						`Could not kick **${message.author.tag}** because of improper permissions.`
-					)
-					.catch((e) => {
-						if (options.verbose) console.error(e);
-					});
+				if (options.errorMessages)
+					await message.channel
+						.send(format(options.kickMessage, message))
+						.catch((e) => {
+							if (options.verbose) console.error(e);
+						});
 				return false;
 			}
 
@@ -243,7 +259,7 @@ class AntiSpam extends EventEmitter {
 						`**${message.author.tag}** (ID: ${message.author.id}) could not be kicked, ${error}.`
 					);
 				await message.channel
-					.send(`Could not kick **${message.author.tag}** because of an error: \`${error}\`.`)
+					.send(format(options.kickMessage, message))
 					.catch(e => {
 						if (options.verbose) console.error(e);
 					});
@@ -402,13 +418,27 @@ class AntiSpam extends EventEmitter {
  * antiSpam.on("spamThresholdBan", (member) => console.log(`${member.user.tag} has reached the ban threshold.`));
  */
 
+ /**
+  * Emitted when the bot could not kick or ban a member.
+  * @event AntiSpam#error
+  * 
+  * @param {Message} message The Discord message
+  * @param {error} error The error
+  * @param {string} type The sanction type: 'kick' or 'ban'
+  * 
+  * @example
+  * antiSpam.on("error", (message, error, type) => {
+  * 	console.log(`${message.member.tag} couldn't receive the sanction '${type}', error: ${error}`);
+  * });
+  */
+
 module.exports = AntiSpam;
 
 /**
  * This function formats a string by replacing some keywords with variables
- * @param {string|RichEmbed} string The non-formatted string or RichEmbed
+ * @param {string|RichEmbed|MessageEmbed} string The non-formatted string or RichEmbed
  * @param {object} message The Discord Message object
- * @returns {string|RichEmbed} The formatted string
+ * @returns {string|RichEmbed|MessageEmbed} The formatted string
  */
 function format(string, message) {
 	if (typeof string === 'string')
@@ -416,7 +446,7 @@ function format(string, message) {
 			.replace(/{@user}/g, message.author.toString())
 			.replace(/{user_tag}/g, message.author.tag)
 			.replace(/{server_name}/g, message.guild.name);
-	const embed = new RichEmbed(string);
+	const embed = version === "12.0.0-dev" ? new RichEmbed(string) : new MessageEmbed(string);
 	if (embed.description) embed.setDescription(format(embed.description, message));
 	if (embed.title) embed.setTitle(format(embed.title, message));
 	if (embed.footer && embed.footer.text) embed.footer.text = format(embed.footer.text, message);

@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="AntiSpam.html">AntiSpam</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="AntiSpam.html#message">message</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="AntiSpam.html#resetData">resetData</a></span></li><li class="nav-heading">Events</li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:banAdd">banAdd</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:kickAdd">kickAdd</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:spamThresholdBan">spamThresholdBan</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:spamThresholdKick">spamThresholdKick</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:spamThresholdWarn">spamThresholdWarn</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:warnAdd">warnAdd</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#format">format</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="AntiSpam.html">AntiSpam</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="AntiSpam.html#message">message</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="AntiSpam.html#resetData">resetData</a></span></li><li class="nav-heading">Events</li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:banAdd">banAdd</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:error">error</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:kickAdd">kickAdd</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:spamThresholdBan">spamThresholdBan</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:spamThresholdKick">spamThresholdKick</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:spamThresholdWarn">spamThresholdWarn</a></span></li><li class="nav-heading"><span class="nav-item-type type-event">E</span><span class="nav-item-name"><a href="AntiSpam.html#event:warnAdd">warnAdd</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#format">format</a></span></li>
 </nav>
 
 <div id="main">
@@ -117,7 +117,7 @@
 
     
 
-    <h4 class="name" id="format"><span class="type-signature"></span>format<span class="signature">(string, message)</span><span class="type-signature"> &rarr; {string|RichEmbed}</span></h4>
+    <h4 class="name" id="format"><span class="type-signature"></span>format<span class="signature">(string, message)</span><span class="type-signature"> &rarr; {string|RichEmbed|MessageEmbed}</span></h4>
 
     
 
@@ -209,6 +209,9 @@
 |
 
 <span class="param-type"><code>RichEmbed</code></span>
+|
+
+<span class="param-type"><code>MessageEmbed</code></span>
 
 
             
@@ -282,6 +285,9 @@
 |
 
 <span class="param-type"><code>RichEmbed</code></span>
+|
+
+<span class="param-type"><code>MessageEmbed</code></span>
 
 
     </dd>
@@ -753,6 +759,9 @@
 |
 
 <span class="param-type"><code>RichEmbed</code></span>
+|
+
+<span class="param-type"><code>MessageEmbed</code></span>
 
 
             
@@ -795,6 +804,9 @@
 |
 
 <span class="param-type"><code>RichEmbed</code></span>
+|
+
+<span class="param-type"><code>MessageEmbed</code></span>
 
 
             
@@ -837,6 +849,9 @@
 |
 
 <span class="param-type"><code>RichEmbed</code></span>
+|
+
+<span class="param-type"><code>MessageEmbed</code></span>
 
 
             
@@ -861,6 +876,135 @@
             
 
             <td class="description last"><p>Message that will be sent in chat upon banning a user.</p></td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>errorMessages</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"><p>Whether the error messages, when the bot doesn't have enough permissions, must be sent or not</p></td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kickErrorMessage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>RichEmbed</code></span>
+|
+
+<span class="param-type"><code>MessageEmbed</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'Could not kick **{user_tag}** because of improper permissions.'
+                
+                </td>
+            
+
+            <td class="description last"><p>Message that will be sent in chat when the bot doesn't have enough permissions to kick the member.</p></td>
+        </tr>
+
+        
+
+    
+
+        <tr>
+            
+                <td class="name"><code>banErrorMessage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>RichEmbed</code></span>
+|
+
+<span class="param-type"><code>MessageEmbed</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'Could not ban **{user_tag}** because of improper permissions.'
+                
+                </td>
+            
+
+            <td class="description last"><p>Message that will be sent in chat when the bot doesn't have enough permissions to ban the member.</p></td>
         </tr>
 
         
